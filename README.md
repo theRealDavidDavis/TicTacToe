@@ -1,7 +1,7 @@
 # TicTacToe
 Reinforcement Learning Model vs Random Placement
 
-Note: This project is currently ongoing
+**Note: This project is currently ongoing**
 
 This repository hosts the files used to train a rienforcement learning model in how to play TicTacToe. The model plays against an opponent who makes truely random deicisions. 
 
