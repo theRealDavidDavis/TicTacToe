@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-class TicTacToe():
+class TicTacToe:
 
     def __init__(self):
         # RL agent is currently made to be the player who uses 1 - other player uses 4.
@@ -30,23 +30,23 @@ class TicTacToe():
     def end_condition(self):
         # Checks the rows, columns and diagonals for end conditions
         for col in range(3):
-            if self.df_state[row].sum() == 3:
+            if self.df_state[row].sum() == self.win_loss[0]:
                 self.win = true
-            elif self.df_state[row].sum() == 12:
+            elif self.df_state[row].sum() == self.win_loss[1]:
                 self.lose = true
         for row in range(3):
-            if self.df_state.iloc[row].sum() == 3:
+            if self.df_state.iloc[row].sum() == self.win_loss[0]:
                 self.win = true
-            elif self.df_state.iloc[row].sum() == 12:
+            elif self.df_state.iloc[row].sum() == self.win_loss[1]:
                 self.lose = true
-        if np.trace(self.df_state) == 3:
+        if np.trace(self.df_state) == self.win_loss[0]:
             self.win = true
-        elif np.trace(self.df_state) == 12:
+        elif np.trace(self.df_state) == self.win_loss[1]:
             self.lose = true
         second_diag = self.df_state.iloc[0, 2] + self.df_state.iloc[1, 1] + self.df_state.iloc[2, 0]
-        if second_diag == 3:
+        if second_diag == self.win_loss[0]:
             self.win = true
-        elif second_diag == 12:
+        elif second_diag == self.win_loss[1]:
             self.lose = true
         if self.moves == 9 and self.win == false and self.lose == false:
             self.tie = true
@@ -66,7 +66,10 @@ class TicTacToe():
                     self.ActionSpace.append(i)
                 i = i + 1
 
-    def update_environment(self, action, player_val):
+    def get_state(self):
+        return self.df_state
+
+    def update_environment(self, action, player):
         # Receives the numerical value for the action and converts it to the DataFrame index location
         move = []
         if action > 6:
@@ -78,11 +81,15 @@ class TicTacToe():
         else:
             tmp = action - 1
             move = [0, tmp]
-        self.df_state.at[move] = player_val
+        self.df_state.at[move] = player
 
     def step(self, action, player):
         # The step function is the function to simulate the agents turn. It receives the agents action, updates the environment, checks win condition and then applies rewards
         reward = 0
+        self.update_environment(action, player)
+        self.end_condition()
+        self.end_of_turn()
+
         if self.play == false:
             if self.win == true:
                 reward = 10
@@ -90,12 +97,8 @@ class TicTacToe():
                 reward = 5
         else:
             if player == 1:
-                self.update_environment(action, 1)
-            else:
-                self.update_environment(action, 4)
-            self.end_condition()
-            self.end_of_turn()
-            self.action_space()
+                reward = -1
+        self.action_space()
 
         return reward, self.df_state
 
